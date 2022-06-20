@@ -1,0 +1,6 @@
+s_nest_mother_routine.c:47:1:__io_putchar	16	static
+s_nest_mother_routine.c:74:6:mother_routine_poll_4_nests	16	static
+s_nest_mother_routine.c:90:6:mother_routine_update_to_PC	16	static
+s_nest_mother_routine.c:101:6:mother_routine_handle_PC	16	static
+s_nest_mother_routine.c:168:13:nest_data_get	40	static
+s_nest_mother_routine.c:208:13:nest_data_update	72	static
