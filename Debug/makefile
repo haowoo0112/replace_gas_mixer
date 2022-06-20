@@ -79,8 +79,8 @@ all: main-build
 main-build: M.elf secondary-outputs
 
 # Tool invocations
-M.elf: $(OBJS) $(USER_OBJS) C:\Users\CYTENA\Downloads\replace_gas_mixer\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "M.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\CYTENA\Downloads\replace_gas_mixer\STM32F407VGTX_FLASH.ld" -Wl,-Map="M.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+M.elf: $(OBJS) $(USER_OBJS) C:\Users\Cytena\Desktop\S.NEST_CY\replace_gas_mixer\STM32F407VGTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "M.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Cytena\Desktop\S.NEST_CY\replace_gas_mixer\STM32F407VGTX_FLASH.ld" -Wl,-Map="M.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

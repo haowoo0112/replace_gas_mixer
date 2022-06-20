@@ -114,10 +114,26 @@ void gas_control(){
 	float p_lower = 460.0;
 	static int flag_aaa = 0;
 	static bool p_on = false;
-
+	static int target_change_times = 1;
+	static float target = 4.0;
+	static float timer = 0, sec = 0;
 //	char ch[30] = {};
 	P = get_pressure();
 	pressure = P;
+	timer++;
+	sec = timer/40; 
+	if( sec > 1800 * target_change_times)
+	{
+		target_change_times++;
+		target = target+0.5;
+		if(target <= 10)
+		{
+			valve_on = 50;
+		}
+		else{
+			valve_on = 100;
+		}
+	}
 
 	// V = get_vacuum();
 
@@ -131,11 +147,11 @@ void gas_control(){
 	// 	flag_v = 2;
 	// 	v_on = false;
 	// }
-	if (P < p_lower && !p_on && CO2_L < 5) {
+	if (P < p_lower && !p_on && CO2_L < target) {
 		p_on = true;
 		counter = 0;
 	}
-	else if (P < p_lower && !flag_pump && CO2_L > 5) {
+	else if (P < p_lower && !flag_pump && CO2_L > target) {
 		counter = 0;
 		flag_pump = 1;
 	}
