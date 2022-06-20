@@ -31,7 +31,7 @@ float slope = 1.0;
 float offset = 0.0;
 float CO2_L = 0.0;
 int counter = 0;
-int valve_on=50;
+int valve_on=40; //7.5: 50
 int flag=0;
 int err=0;
 int flag_co2 = 0;
@@ -131,11 +131,20 @@ void gas_control(){
 	// 	flag_v = 2;
 	// 	v_on = false;
 	// }
-	if (P < p_lower && !p_on) {
+	if (P < p_lower && !p_on && CO2_L < 5) {
 		p_on = true;
 		counter = 0;
 	}
-	if(p_on && CO2_L < 7.5){
+	else if (P < p_lower && !flag_pump && CO2_L > 5) {
+		counter = 0;
+		flag_pump = 1;
+	}
+
+	if (P > p_upper){
+		flag_pump = 0;
+	}
+
+	if(p_on){
 		if(counter < valve_on){
 			counter ++;
 			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_SET);
@@ -149,13 +158,12 @@ void gas_control(){
 	else{
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_RESET);
 	}
-	if(flag_pump || CO2_L > 7.5){
+
+	if(flag_pump)
 		set_vacuum_pump(true);
-	}
-	if (P > p_upper){
-		flag_pump = 0;
+	else
 		set_vacuum_pump(false);
-	}
+
 
 //
 //	if(p_on)
