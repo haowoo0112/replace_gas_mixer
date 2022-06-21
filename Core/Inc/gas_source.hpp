@@ -115,23 +115,27 @@ void gas_control(){
 	float sec = 0;
 	static int flag_aaa = 0;
 	static bool p_on = false;
+	static bool force_air_on = false;
+	static bool valve_on_ctrl = false;
+
 	static int target_change_times = 1;
 	static float timer = 0;
+
 //	char ch[30] = {};
 	P = get_pressure();
 	pressure = P;
 	timer++;
 	sec = timer/40; 
-	if(sec == 5)
+	if(sec<3)
 	{
-		target = 4.0;
-		valve_on = 50;
+		target = 4;
+		valve_on = 20;
 	}
 	if( sec > 1800 * target_change_times)
 	{
 		target_change_times++;
 		target = target+0.5;
-		if(target <= 10)
+		if(target <= 10)//waiting for new equipment to tune variables
 		{
 			valve_on = 50;
 		}
@@ -152,17 +156,29 @@ void gas_control(){
 	// 	flag_v = 2;
 	// 	v_on = false;
 	// }
-	if (P < p_lower && !p_on && CO2_L < target) {
+	if (P < p_lower && !p_on && CO2_L < target-0.3) {
 		p_on = true;
 		counter = 0;
+		valve_on_ctrl = true;
 	}
-	else if (P < p_lower && !flag_pump && CO2_L > target) {
+	else if (P < p_lower && !flag_pump && CO2_L > target-0.3) {
 		counter = 0;
 		flag_pump = 1;
+	}
+	else if(P > p_upper && P < p_upper+10 && CO2_L > target + 0.3){// test : force co2 lower
+		force_air_on = true;
+		if(valve_on_ctrl == true){
+			valve_on--;
+			valve_on_ctrl = false;
+		}
+		
 	}
 
 	if (P > p_upper){
 		flag_pump = 0;
+	}
+	if(P> p_upper+100 || CO2_L < target){
+		force_air_on=false;
 	}
 
 	if(p_on){
@@ -180,7 +196,7 @@ void gas_control(){
 		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_RESET);
 	}
 
-	if(flag_pump)
+	if(flag_pump || force_air_on)
 		set_vacuum_pump(true);
 	else
 		set_vacuum_pump(false);

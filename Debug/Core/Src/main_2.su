@@ -2,10 +2,10 @@ gas_source.hpp:40:7:float get_pressure()	56	static
 gas_source.hpp:67:7:float get_vacuum()	32	static
 gas_source.hpp:96:6:void set_pressure_pump(bool)	16	static
 gas_source.hpp:104:6:void set_vacuum_pump(bool)	16	static
-gas_source.hpp:112:6:void gas_control()	24	static
-gas_source.hpp:245:6:void CO2_read()	136	static
-gas_source.hpp:366:6:void CO2_default()	4	static
-gas_source.hpp:373:6:void CO2_init()	24	static
+gas_source.hpp:112:6:void gas_control()	32	static
+gas_source.hpp:261:6:void CO2_read()	136	static
+gas_source.hpp:382:6:void CO2_default()	4	static
+gas_source.hpp:389:6:void CO2_init()	24	static
 main_2.cpp:32:6:void main_2_init()	8	static
 main_2.cpp:44:6:void main_2_loop()	592	static
 main_2.cpp:192:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
