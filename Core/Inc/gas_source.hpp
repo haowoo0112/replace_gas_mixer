@@ -18,7 +18,7 @@ extern SPI_HandleTypeDef hspi1;
 extern int flag_p;
 extern int flag_v;
 extern float pressure;
-
+extern float target;
 
 // TODO: tmp
 float P = 0;
@@ -112,16 +112,21 @@ void set_vacuum_pump(bool en){
 void gas_control(){
 	float p_upper = 580.0;
 	float p_lower = 460.0;
+	float sec = 0;
 	static int flag_aaa = 0;
 	static bool p_on = false;
 	static int target_change_times = 1;
-	static float target = 4.0;
-	static float timer = 0, sec = 0;
+	static float timer = 0;
 //	char ch[30] = {};
 	P = get_pressure();
 	pressure = P;
 	timer++;
 	sec = timer/40; 
+	if(sec == 5)
+	{
+		target = 4.0;
+		valve_on = 50;
+	}
 	if( sec > 1800 * target_change_times)
 	{
 		target_change_times++;
@@ -179,6 +184,8 @@ void gas_control(){
 		set_vacuum_pump(true);
 	else
 		set_vacuum_pump(false);
+
+
 
 
 //

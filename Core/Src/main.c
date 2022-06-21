@@ -58,6 +58,7 @@ int flag_p = 0;
 int flag_v = 0;
 float pressure;
 float r;
+float target = 4;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
