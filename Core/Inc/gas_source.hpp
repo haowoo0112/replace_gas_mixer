@@ -19,6 +19,7 @@ extern int flag_p;
 extern int flag_v;
 extern float pressure;
 extern float target;
+extern TIM_HandleTypeDef htim1;
 
 // TODO: tmp
 float P = 0;
@@ -102,10 +103,16 @@ void set_pressure_pump(bool en){
 }
 
 void set_vacuum_pump(bool en){
+	int i;
 	if(en){
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,499);
+
 	} else {
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,0);
+//		HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1);
+
 	}
 }
 
