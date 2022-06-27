@@ -15,6 +15,7 @@
 
 extern I2C_HandleTypeDef hi2c1;
 extern SPI_HandleTypeDef hspi1;
+extern TIM_HandleTypeDef htim1;
 extern int flag_p;
 extern int flag_v;
 extern float pressure;
@@ -102,10 +103,16 @@ void set_pressure_pump(bool en){
 }
 
 void set_vacuum_pump(bool en){
+	int i;
 	if(en){
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
+		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,499);
+
 	} else {
-		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
+		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,0);
+//		HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1);
+
 	}
 }
 
@@ -113,10 +120,12 @@ void gas_control(){
 	float p_upper = 580.0;
 	float p_lower = 460.0;
 	float sec = 0;
-	static int flag_aaa = 0;
+	static bool co2_state = false;
 	static bool p_on = false;
 	static bool force_air_on = false;
 	static bool valve_on_ctrl = false;
+	static bool force_air_on_once = false;
+	static bool force_co2_on = false;
 
 	static int target_change_times = 1;
 	static float timer = 0;
@@ -128,10 +137,10 @@ void gas_control(){
 	sec = timer/40; 
 	if(sec<3)
 	{
-		target = 4;
-		valve_on = 20;
+		target = 5;
+		valve_on = 25;
 	}
-	if( sec > 1800 * target_change_times)
+	if( sec > 1000000 * target_change_times)
 	{
 		target_change_times++;
 		target = target+0.5;
@@ -144,40 +153,66 @@ void gas_control(){
 		}
 	}
 
-	// V = get_vacuum();
-
-	// if (V > v_lower && !v_on) {
-	// 	set_vacuum_pump(true);
-	// 	flag_v = 1;
-	// 	v_on = true;
-	// }
-	// else if (V < v_upper) {
-	// 	set_vacuum_pump(false);
-	// 	flag_v = 2;
-	// 	v_on = false;
-	// }
-	if (P < p_lower && !p_on && CO2_L < target-0.3) {
-		p_on = true;
-		counter = 0;
-		valve_on_ctrl = true;
-	}
-	else if (P < p_lower && !flag_pump && CO2_L > target-0.3) {
-		counter = 0;
-		flag_pump = 1;
-	}
-	else if(P > p_upper && P < p_upper+10 && CO2_L > target + 0.3){// test : force co2 lower
-		force_air_on = true;
-		if(valve_on_ctrl == true){
-			valve_on--;
-			valve_on_ctrl = false;
+	co2_state = CO2_L < target-0.3 ? true : false;
+	if(P < p_lower)
+	{
+		force_air_on_once = false;
+		force_co2_on = false;
+		if(co2_state && !p_on){
+			counter = 0;
+			p_on = true;
 		}
-		
+		else{
+			valve_on_ctrl = true;
+			flag_pump = 1;
+			counter = 0;
+		}
 	}
+	else
+	{
+		if(co2_state && !p_on && !force_co2_on && P > 540)
+		{
+			force_co2_on = true;
+			counter = valve_on/2;
+			p_on = true;
+			flag_pump = 0;
+			if(CO2_L < target-0.5)
+				valve_on++;
+		}
+		if(CO2_L > target + 0.3 && !force_air_on && !force_air_on_once)
+		{
+			//todo: make sure pump won't start on repeatly
+			force_air_on = true;
+			force_air_on_once = true;
+			if(valve_on_ctrl == true)
+			{
+				valve_on--;
+				valve_on_ctrl = false;
+			}
+		}
+	}
+//	if (P < p_lower && !p_on && CO2_L < target-0.3) {
+//		p_on = true;
+//		counter = 0;
+//		valve_on_ctrl = true;
+//	}
+//	else if (P < p_lower && !flag_pump && CO2_L > target-0.3) {
+//		counter = 0;
+//		flag_pump = 1;
+//	}
+//	else if(P > p_upper && P < p_upper+10 && CO2_L > target + 0.3){// test : force co2 lower
+//		force_air_on = true;
+//		if(valve_on_ctrl == true){
+//			valve_on--;
+//			valve_on_ctrl = false;
+//		}
+//
+//	}
 
 	if (P > p_upper){
 		flag_pump = 0;
 	}
-	if(P> p_upper+100 || CO2_L < target){
+	if(P> p_upper+50 || CO2_L < target){
 		force_air_on=false;
 	}
 
@@ -188,7 +223,8 @@ void gas_control(){
 		}
 		else{
 			HAL_GPIO_WritePin(GPIOE, GPIO_PIN_5, GPIO_PIN_RESET);
-			flag_pump = 1;
+			if(P < p_lower + 40)
+				flag_pump = 1;
 			p_on = false;
 		}
 	}

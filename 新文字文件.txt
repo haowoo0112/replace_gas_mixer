@@ -1,0 +1,34 @@
+	co2_state = CO2_L < target-0.3 ? true : false;
+	if(P < p_lower)
+	{
+		if(co2_state){
+			counter = 0;
+			p_on = true;
+			valve_on_ctrl = true;
+		}
+		else{
+			flag_pump = 1;
+			counter = 0;
+		}
+	}
+	else
+	{
+		if(co2_state && !p_on)
+		{
+			counter = valve_on / 2;
+			p_on = true;
+			flag_pump = 0;
+			valve_on++;
+		}
+		(CO2_L > target + 0.3 && !force_air_on) 
+		{
+			//todo: make sure pump won't start on repeatly
+			force_air_on = true;
+			if(valve_on_ctrl == true)
+			{
+				valve_on--;
+				valve_on_ctrl = false;
+			}
+		}
+	}
+	 

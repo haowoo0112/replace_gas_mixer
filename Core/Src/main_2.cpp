@@ -112,7 +112,7 @@ void main_2_loop(void){
 
 		// sprintf(bar, "[P]%.2f,[V]%.2f,p_on:%.2f,p_off:%.2f,v_on:%.2f,v_off:%.2f\r\n", P, V,float(count_pon*25/1000),float(count_poff*25/1000),float(count_von*25/1000),float(count_voff*25/1000));
 		// strcat(foo, bar);
-		if(count%10==0)
+		if(count%20==0)
 		{
 			sprintf(bar,"P:%.2f,CO2:%.2f,valve_on:%d,counter:%d,err:%d,time:%.2f,target:%.2f\r\n",P,CO2_L,valve_on,counter,err,time,target);
 			strcat(foo,bar);
