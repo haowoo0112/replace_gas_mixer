@@ -102,14 +102,20 @@ void set_pressure_pump(bool en){
 }
 
 void set_vacuum_pump(bool en){
-	int i;
+	int i=0;
 	if(en){
 //		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
-		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,499);
-
-	} else {
+		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,i);
+		i++;
+		if(i>=499)
+		{
+			i=499;
+		}
+	} 
+	else {
 //		HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_RESET);
 		__HAL_TIM_SET_COMPARE(&htim1,TIM_CHANNEL_1,0);
+		i=0;
 //		HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1);
 
 	}
@@ -142,6 +148,7 @@ struct control_flag{
 	bool adjust_valve;//valve_on_ctrl
 	bool steady;//statistics
 	bool air_flag;//pump_flag
+	bool f_co2_flag;
 };
 void gas_control(){
 	float p_upper = 580.0;
@@ -154,7 +161,7 @@ void gas_control(){
 	static int target_change_times = 1;
 	static float timer = 0;
 
-	static control_flag ctrl_f = {false,false,false,false,false,false};
+	static control_flag ctrl_f = {false,false,false,false,false,false,false};
 
 	P = get_pressure();
 	pressure = P;
@@ -181,6 +188,7 @@ void gas_control(){
 
 	if(P < p_lower)
 	{
+		ctrl_f.f_co2_flag = false;
 		ctrl_f.f_air_flag = false;
 		if(CO2_L < target - 0.2 && !ctrl_f.co2_on){
 			counter = 0;
@@ -198,18 +206,15 @@ void gas_control(){
 	}
 	else
 	{
-		// if(co2_state && !ctrl_f.co2_on && !force_co2_on && P > 580)
-		// {
-		// 	force_co2_on = true;
-		// 	counter = valve_on;
-		// 	ctrl_f.co2_on = true;
-		// 	ctrl_f.air_flag = false;
-		// 	if(CO2_L < target-0.5)
-		// 		valve_on++;
-		// }
+		if(CO2_L < target && !ctrl_f.co2_on && ctrl_f.f_co2_flag)
+		{
+			ctrl_f.co2_on = true;
+			ctrl_f.f_co2_flag = false;
+			counter = valve_on/3;
+		}
+		
 		if(CO2_L > target + 0.2 && !ctrl_f.f_air_on && !ctrl_f.f_air_flag)
 		{
-			//todo: make sure pump won't start on repeatly
 			ctrl_f.f_air_on = true;
 			ctrl_f.f_air_flag = true;
 			if(ctrl_f.adjust_valve == true)
@@ -223,8 +228,9 @@ void gas_control(){
 	if (P > p_upper){
 		ctrl_f.air_flag = false;
 		ctrl_f.steady = false;
+		ctrl_f.f_co2_flag = true;
 	}
-	if(P> p_upper+50 || CO2_L < target){
+	if(P> p_upper+50 || CO2_L < target+0.1){
 		ctrl_f.f_air_on=false;
 	}
 
