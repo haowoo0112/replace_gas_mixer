@@ -35,7 +35,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 
 	char DEBUG_cmd[300] = "";
 	char DEBUG_temp[300] = "";
-	float C1 = 0, y=0,result=0;
+	float C1 = 0, y=0,result=10;
 //	sprintf(DEBUG_cmd, "%d \r\n",cnt);
 //	CDC_Transmit_FS((uint8_t*)DEBUG_cmd, strlen(DEBUG_cmd));
 	if((bufdata[cnt-1] == 0x0A) && (bufdata[cnt-2] == 0x0D)){
@@ -45,12 +45,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 			co2 = co2*10+ (bufdata[i]-48);
 		}
 		C1 = co2;
-		y = (2.811 * pow(10,-38)* pow(C1,6) - 9.817 * pow(10,-32) * pow(C1,5) + 1.304 * pow(10,-25) * pow(C1,4) - 8.126 * pow(10,-20)*pow(C1,3) + 2.311 * pow(10,-14) * pow(C1,2)- 2.195 * pow(10,-9) * C1 - 1.471 * pow(10,-3));
-		result = C1/(1+y*(1013-(1013+P)));
+
+		y = (2.6661 * pow(10,-16)* pow(C1,4) - 1.1146 * pow(10,-12) * pow(C1,3) + 1.7397 * pow(10,-9) * pow(C1,2) - 1.2556 * pow(10,-6)*C1 - 9.8754 * pow(10,-4));
+//		y = (2.811 * pow(10,-38)* pow(C1,6) - 9.817 * pow(10,-32) * pow(C1,5) + 1.304 * pow(10,-25) * pow(C1,4) - 8.126 * pow(10,-20)*pow(C1,3) + 2.311 * pow(10,-14) * pow(C1,2)- 2.195 * pow(10,-9) * C1 - 1.471 * pow(10,-3));
+//		result = C1/(1+y*(1013-(1013+P)));
+		result = C1/(1+y*(1013-(1013+0)));
 		r=result;
 //		sprintf(DEBUG_cmd, " %d %d %d\r\n", cnt, bufdata[0],bufdata[1]);
 		sprintf(DEBUG_cmd, "%f,%f,%f\r\n ", C1/100,y,result/100);
-//		CDC_Transmit_FS((uint8_t*)DEBUG_cmd, strlen(DEBUG_cmd));
+		CDC_Transmit_FS((uint8_t*)DEBUG_cmd, strlen(DEBUG_cmd));
 //		for(int i=0;i<cnt;i++){
 //			result_bufdata[i] = bufdata[i];
 //		}

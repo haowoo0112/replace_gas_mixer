@@ -7,5 +7,5 @@ gas_source.hpp:267:6:void CO2_read()	136	static
 gas_source.hpp:388:6:void CO2_default()	4	static
 gas_source.hpp:395:6:void CO2_init()	24	static
 main_2.cpp:32:6:void main_2_init()	8	static
-main_2.cpp:44:6:void main_2_loop()	592	static
-main_2.cpp:192:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static
+main_2.cpp:44:6:void main_2_loop()	512	static
+main_2.cpp:193:6:void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef*)	16	static

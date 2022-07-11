@@ -114,7 +114,8 @@ void main_2_loop(void){
 		// strcat(foo, bar);
 		if(count%20==0)
 		{
-			sprintf(bar,"P:%.2f,CO2:%.2f,valve_on:%d,counter:%d,err:%d,time:%.2f,target:%.2f\r\n",P,CO2_L,valve_on,counter,err,time,target);
+//			sprintf(bar,"P:%.2f,CO2:%.2f,valve_on:%d,counter:%d,err:%d,time:%.2f,target:%.2f\r\n",P,CO2_L,valve_on,counter,err,time,target);
+			sprintf(bar,"CO2:%.2f\r\n",CO2_L);
 			strcat(foo,bar);
 			HAL_Delay(1);
 			CDC_Transmit_FS((uint8_t*)foo, strlen(foo));

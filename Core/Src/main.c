@@ -58,7 +58,7 @@ UART_HandleTypeDef huart3;
 int flag_p = 0;
 int flag_v = 0;
 float pressure;
-float r;
+float r=8787;
 float target = 4;
 /* USER CODE END PV */
 
